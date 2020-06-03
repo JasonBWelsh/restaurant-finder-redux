@@ -1,38 +1,39 @@
-import React, { useState, useEffect, useCallback, useReducer } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import axios from 'axios';
 import SearchForm from '../../components/SearchForm/SearchForm.js';
 import List from '../../components/List/List.js';
-import { restaurantsReducer } from '../../reducers/restaurantsReducer.js';
 
 const API_ENDPOINT = 'http://opentable.herokuapp.com/api/restaurants?city=';
 
-const Search = () => {
-  const [restaurants, dispatchRestaurants] = useReducer(restaurantsReducer, {
-    data: [],
-    isLoading: false,
-    isError: false,
-  });
+function Search() {
+  // react-redux hooks
+  const restaurants = useSelector((state) => state.data);
+  const isLoading = useSelector((state) => state.isLoading);
+  const isError = useSelector((state) => state.isError);
+  const dispatch = useDispatch();
+  //
   const [city, setCity] = useState('toronto');
   const [filter, setFilter] = useState('');
   const [url, setUrl] = useState(`${API_ENDPOINT}${city}`);
 
   const handleFetchRestaurants = useCallback(() => {
-    dispatchRestaurants({ type: 'RESTAURANTS_FETCH_INIT' });
+    dispatch({ type: 'RESTAURANTS_FETCH_INIT' });
 
     const fetchRestaurants = async () => {
       try {
         const response = await axios.get(url);
         console.log(response);
-        dispatchRestaurants({
+        dispatch({
           type: 'RESTAURANTS_FETCH_SUCCESS',
           payload: response.data.restaurants,
         });
       } catch {
-        dispatchRestaurants({ type: 'FETCH_RESTAURANTS_FAILURE' });
+        dispatch({ type: 'FETCH_RESTAURANTS_FAILURE' });
       }
     };
     fetchRestaurants();
-  }, [url]);
+  }, [url, dispatch]);
 
   useEffect(() => {
     handleFetchRestaurants();
@@ -62,14 +63,14 @@ const Search = () => {
         handleFilter={handleFilter}
       />
       <List
-        restaurants={restaurants.data.filter((rest) =>
+        restaurants={restaurants.filter((rest) =>
           rest.name.toLowerCase().includes(filter.toLowerCase())
         )}
-        isLoading={restaurants.isLoading}
-        isError={restaurants.isError}
+        isLoading={isLoading}
+        isError={isError}
       />
     </div>
   );
-};
+}
 
 export default Search;
