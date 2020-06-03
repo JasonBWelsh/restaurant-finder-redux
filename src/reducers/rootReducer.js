@@ -2,6 +2,7 @@ const initialState = {
   data: [],
   isLoading: false,
   isError: false,
+  city: 'toronto',
 };
 
 export const rootReducer = (state = initialState, action) => {
@@ -24,6 +25,11 @@ export const rootReducer = (state = initialState, action) => {
         ...state,
         isLoading: false,
         isError: true,
+      };
+    case 'CITY_SET':
+      return {
+        ...state,
+        city: action.payload,
       };
     default:
       return state;
