@@ -9,12 +9,12 @@ const API_ENDPOINT = 'http://opentable.herokuapp.com/api/restaurants?city=';
 function Search() {
   // react-redux hooks
   const dispatch = useDispatch();
-  const restaurants = useSelector((state) => state.data);
+  const restaurants = useSelector((state) => state.restaurants);
   const isLoading = useSelector((state) => state.isLoading);
   const isError = useSelector((state) => state.isError);
   const city = useSelector((state) => state.city);
+  const filter = useSelector((state) => state.filter);
   //
-  const [filter, setFilter] = useState('');
   const [url, setUrl] = useState(`${API_ENDPOINT}${city}`);
 
   const handleFetchRestaurants = useCallback(() => {
@@ -40,7 +40,6 @@ function Search() {
   }, [handleFetchRestaurants]);
 
   const handleCityInput = (event) => {
-    // setCity(event.target.value);
     dispatch({ type: 'CITY_SET', payload: event.target.value });
   };
 
@@ -50,15 +49,12 @@ function Search() {
   };
 
   const handleFilter = (event) => {
-    console.log('handleFilter log restaurantList:', restaurants.data);
-    setFilter(event.target.value);
+    dispatch({ type: 'FILTER_SET', payload: event.target.value });
   };
 
   return (
     <div>
       <SearchForm
-        city={city}
-        filter={filter}
         handleCityInput={handleCityInput}
         handleSearchSubmit={handleSearchSubmit}
         handleFilter={handleFilter}
